@@ -151,9 +151,13 @@ public:
                                      const GpsLocationExtended& locationExtended,
                                      enum loc_sess_status status,
                                      LocPosTechMask loc_technology_mask,
-                                     bool fromEngineHub = false,
                                      GnssDataNotification* pDataNotify = nullptr,
                                      int msInWeek = -1);
+    virtual void reportEnginePositionsEvent(unsigned int count,
+                                            EngineLocationInfo* locationArr) {
+        (void)count;
+        (void)locationArr;
+    }
     virtual void reportSvEvent(const GnssSvNotification& svNotify,
                                bool fromEngineHub=false);
     virtual void reportDataEvent(const GnssDataNotification& dataNotify, int msInWeek);
@@ -171,7 +175,8 @@ public:
     virtual bool requestATL(int connHandle, LocAGpsType agps_type,
                             LocApnTypeMask apn_type_mask);
     virtual bool releaseATL(int connHandle);
-    virtual bool requestNiNotifyEvent(const GnssNiNotification &notify, const void* data);
+    virtual bool requestNiNotifyEvent(const GnssNiNotification &notify, const void* data,
+                                      const LocInEmergency emergencyState);
     inline virtual bool isInSession() { return false; }
     ContextBase* getContext() const { return mContext; }
     virtual void reportGnssMeasurementsEvent(const GnssMeasurements& gnssMeasurements,
