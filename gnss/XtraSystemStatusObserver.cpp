@@ -65,7 +65,8 @@ public:
     inline XtraIpcListener(IOsObserver* observer, const MsgTask* msgTask,
                            XtraSystemStatusObserver& xsso) :
             mSystemStatusObsrvr(observer), mMsgTask(msgTask), mXSSO(xsso) {}
-    virtual void onReceive(const char* data, uint32_t length) override {
+    virtual void onReceive(const char* data, uint32_t length,
+                           const LocIpcRecver* recver) override {
 #define STRNCMP(str, constStr) strncmp(str, constStr, sizeof(constStr)-1)
         if (!STRNCMP(data, "ping")) {
             LOC_LOGd("ping received");
@@ -129,19 +130,33 @@ bool XtraSystemStatusObserver::updateLockStatus(GnssConfigGpsLock lock) {
 }
 
 bool XtraSystemStatusObserver::updateConnections(uint64_t allConnections,
-        uint64_t wifiNetworkHandle, uint64_t mobileNetworkHandle) {
+        NetworkInfoType* networkHandleInfo) {
     mIsConnectivityStatusKnown = true;
     mConnections = allConnections;
-    mWifiNetworkHandle = wifiNetworkHandle;
-    mMobileNetworkHandle = mobileNetworkHandle;
+
+    LOC_LOGd("updateConnections mConnections:%" PRIx64, mConnections);
+    for (uint8_t i = 0; i < MAX_NETWORK_HANDLES; ++i) {
+        mNetworkHandle[i] = networkHandleInfo[i];
+        LOC_LOGd("updateConnections [%d] networkHandle:%" PRIx64 " networkType:%u",
+            i, mNetworkHandle[i].networkHandle, mNetworkHandle[i].networkType);
+    }
 
     if (!mReqStatusReceived) {
         return true;
     }
 
     stringstream ss;
-    ss << "connection" << endl << mConnections << endl << wifiNetworkHandle
-            << endl << mobileNetworkHandle;
+    ss << "connection" << endl << mConnections << endl
+            << mNetworkHandle[0].toString() << endl
+            << mNetworkHandle[1].toString() << endl
+            << mNetworkHandle[2].toString() << endl
+            << mNetworkHandle[3].toString() << endl
+            << mNetworkHandle[4].toString() << endl
+            << mNetworkHandle[5].toString() << endl
+            << mNetworkHandle[6].toString() << endl
+            << mNetworkHandle[7].toString() << endl
+            << mNetworkHandle[8].toString() << endl
+            << mNetworkHandle[MAX_NETWORK_HANDLES-1].toString();
     string s = ss.str();
     return ( LocIpc::send(*mSender, (const uint8_t*)s.data(), s.size()) );
 }
@@ -200,7 +215,16 @@ inline bool XtraSystemStatusObserver::onStatusRequested(int32_t xtraStatusUpdate
     ss << "respondStatus" << endl;
     (mGpsLock == -1 ? ss : ss << mGpsLock) << endl;
     (mConnections == (uint64_t)~0 ? ss : ss << mConnections) << endl
-            << mWifiNetworkHandle << endl << mMobileNetworkHandle << endl
+            << mNetworkHandle[0].toString() << endl
+            << mNetworkHandle[1].toString() << endl
+            << mNetworkHandle[2].toString() << endl
+            << mNetworkHandle[3].toString() << endl
+            << mNetworkHandle[4].toString() << endl
+            << mNetworkHandle[5].toString() << endl
+            << mNetworkHandle[6].toString() << endl
+            << mNetworkHandle[7].toString() << endl
+            << mNetworkHandle[8].toString() << endl
+            << mNetworkHandle[MAX_NETWORK_HANDLES-1].toString() << endl
             << mTac << endl << mMccmnc << endl << mIsConnectivityStatusKnown;
 
     string s = ss.str();
@@ -272,11 +296,10 @@ void XtraSystemStatusObserver::notify(const list<IDataItemCore*>& dlist)
                     {
                         NetworkInfoDataItemBase* networkInfo =
                                 static_cast<NetworkInfoDataItemBase*>(each);
+                        NetworkInfoType* networkHandleInfo =
+                                static_cast<NetworkInfoType*>(networkInfo->getNetworkHandle());
                         mXtraSysStatObj->updateConnections(networkInfo->getAllTypes(),
-                                (NetworkHandle) networkInfo->getNetworkHandle(
-                                        loc_core::NetworkInfoDataItemBase::TYPE_WIFI),
-                                (NetworkHandle) networkInfo->getNetworkHandle(
-                                        loc_core::NetworkInfoDataItemBase::TYPE_MOBILE));
+                                networkHandleInfo);
                     }
                     break;
 
