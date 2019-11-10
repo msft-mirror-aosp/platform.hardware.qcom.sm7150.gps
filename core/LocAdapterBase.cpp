@@ -81,7 +81,6 @@ void LocAdapterBase::
                         const GpsLocationExtended& locationExtended,
                         enum loc_sess_status status,
                         LocPosTechMask loc_technology_mask,
-                        bool /*fromEngineHub*/,
                         GnssDataNotification* pDataNotify,
                         int msInWeek)
 {
@@ -154,7 +153,9 @@ bool LocAdapterBase::
 DEFAULT_IMPL(false)
 
 bool LocAdapterBase::
-    requestNiNotifyEvent(const GnssNiNotification &/*notify*/, const void* /*data*/)
+    requestNiNotifyEvent(const GnssNiNotification &/*notify*/,
+                         const void* /*data*/,
+                         const LocInEmergency emergencyState)
 DEFAULT_IMPL(false)
 
 void LocAdapterBase::
