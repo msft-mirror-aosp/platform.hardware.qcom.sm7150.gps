@@ -768,6 +768,8 @@ GnssAdapter::setConfig()
         gnssConfigRequested.aGlonassPositionProtocolMask =
                 gpsConf.A_GLONASS_POS_PROTOCOL_SELECT;
     }
+
+    /* Let HAL do nothing to LPPe, just set it by MBN
     if (gpsConf.LPPE_CP_TECHNOLOGY) {
         gnssConfigRequested.flags |= GNSS_CONFIG_FLAGS_LPPE_CONTROL_PLANE_VALID_BIT;
         gnssConfigRequested.lppeControlPlaneMask =
@@ -779,6 +781,7 @@ GnssAdapter::setConfig()
         gnssConfigRequested.lppeUserPlaneMask =
                 mLocApi->convertLppeUp(gpsConf.LPPE_UP_TECHNOLOGY);
     }
+    */
     gnssConfigRequested.blacklistedSvIds.assign(mBlacklistedSvIds.begin(),
                                                 mBlacklistedSvIds.end());
     mLocApi->sendMsg(new LocApiMsg(
