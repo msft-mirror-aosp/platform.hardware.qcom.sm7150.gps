@@ -794,7 +794,6 @@ GnssAdapter::setConfig()
             mLocApi->convertLppProfile(gpsConf.LPP_PROFILE);
     gnssConfigRequested.aGlonassPositionProtocolMask =
             gpsConf.A_GLONASS_POS_PROTOCOL_SELECT;
-    /* Let HAL do nothing to LPPe, just set it by MBN
     if (gpsConf.LPPE_CP_TECHNOLOGY) {
         gnssConfigRequested.flags |= GNSS_CONFIG_FLAGS_LPPE_CONTROL_PLANE_VALID_BIT;
         gnssConfigRequested.lppeControlPlaneMask =
@@ -806,7 +805,7 @@ GnssAdapter::setConfig()
         gnssConfigRequested.lppeUserPlaneMask =
                 mLocApi->convertLppeUp(gpsConf.LPPE_UP_TECHNOLOGY);
     }
-    */
+
     gnssConfigRequested.blacklistedSvIds.assign(mBlacklistedSvIds.begin(),
                                                 mBlacklistedSvIds.end());
     mLocApi->sendMsg(new LocApiMsg(
@@ -995,6 +994,7 @@ std::vector<LocationError> GnssAdapter::gnssUpdateConfig(const std::string& oldM
     }
 
     if (gnssConfigRequested.flags & GNSS_CONFIG_FLAGS_LPP_PROFILE_VALID_BIT) {
+        /* Let HAL do nothing here, just set it by MBN
         if (gnssConfigNeedEngineUpdate.flags &
                 GNSS_CONFIG_FLAGS_LPP_PROFILE_VALID_BIT) {
             err = mLocApi->setLPPConfigSync(gnssConfigRequested.lppProfile);
@@ -1002,10 +1002,12 @@ std::vector<LocationError> GnssAdapter::gnssUpdateConfig(const std::string& oldM
                 errsList[index] = err;
             }
         }
+        */
         index++;
     }
 
     if (gnssConfigRequested.flags & GNSS_CONFIG_FLAGS_LPPE_CONTROL_PLANE_VALID_BIT) {
+        /* Let HAL do nothing here, just set it by MBN
         if (gnssConfigNeedEngineUpdate.flags &
                 GNSS_CONFIG_FLAGS_LPPE_CONTROL_PLANE_VALID_BIT) {
             err = mLocApi->setLPPeProtocolCpSync(
@@ -1014,10 +1016,12 @@ std::vector<LocationError> GnssAdapter::gnssUpdateConfig(const std::string& oldM
                 errsList[index] = err;
             }
         }
+        */
         index++;
     }
 
     if (gnssConfigRequested.flags & GNSS_CONFIG_FLAGS_LPPE_USER_PLANE_VALID_BIT) {
+        /* Let HAL do nothing here, just set it by MBN
         if (gnssConfigNeedEngineUpdate.flags &
                 GNSS_CONFIG_FLAGS_LPPE_USER_PLANE_VALID_BIT) {
             err = mLocApi->setLPPeProtocolUpSync(
@@ -1026,6 +1030,7 @@ std::vector<LocationError> GnssAdapter::gnssUpdateConfig(const std::string& oldM
                 errsList[index] = err;
             }
         }
+        */
         index++;
     }
 
