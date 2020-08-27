@@ -362,6 +362,7 @@ static void convertGnssData_1_1(GnssMeasurementsNotification& in,
 static void convertGnssData_2_0(GnssMeasurementsNotification& in,
         V2_0::IGnssMeasurementCallback::GnssData& out)
 {
+    memset(&out, 0, sizeof(V2_0::IGnssMeasurementCallback::GnssData));
     out.measurements.resize(in.count);
     for (size_t i = 0; i < in.count; i++) {
         convertGnssMeasurement(in.measurements[i], out.measurements[i].v1_1.v1_0);
